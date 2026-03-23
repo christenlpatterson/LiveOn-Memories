@@ -27,11 +27,20 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      // Pick the best supported MIME type — Safari requires mp4, Chrome/Firefox support webm
+      const mimeType = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/aac',
+        '',
+      ].find(t => t === '' || MediaRecorder.isTypeSupported(t)) ?? '';
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       chunksRef.current = [];
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const type = recorder.mimeType || mimeType || 'audio/webm';
+        const blob = new Blob(chunksRef.current, { type });
         onAddAudioClip?.(blob);
         stream.getTracks().forEach(t => t.stop());
       };

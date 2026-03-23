@@ -103,7 +103,8 @@ export function deleteComment(milestoneId: string, commentId: string): Promise<v
 
 export function uploadAudio(milestoneId: string, blob: Blob): Promise<AudioClip> {
   const fd = new FormData();
-  fd.append('file', blob, 'recording.webm');
+  const ext = blob.type.includes('mp4') || blob.type.includes('aac') ? 'mp4' : 'webm';
+  fd.append('file', blob, `recording.${ext}`);
   return req(`/api/milestones/${milestoneId}/audio`, { method: 'POST', body: fd });
 }
 
