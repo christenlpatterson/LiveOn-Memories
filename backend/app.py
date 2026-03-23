@@ -8,9 +8,13 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 BASE_DIR = Path(__file__).parent
-MEDIA_DIR = BASE_DIR / "media"
-PHOTOS_DIR = MEDIA_DIR / "photos"
-AUDIO_DIR = MEDIA_DIR / "audio"
+
+# On Render: set MEDIA_ROOT=/data/media and DB_PATH=/data/scrapbook.db
+# (mount Persistent Disk at /data in the Render dashboard)
+MEDIA_DIR   = Path(os.environ.get("MEDIA_ROOT",  str(BASE_DIR / "media")))
+PHOTOS_DIR  = MEDIA_DIR / "photos"
+AUDIO_DIR   = MEDIA_DIR / "audio"
+DB_PATH     = os.environ.get("DB_PATH", str(BASE_DIR / "scrapbook.db"))
 
 PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
@@ -18,7 +22,7 @@ AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR / 'scrapbook.db'}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024  # 200 MB upload limit
 
