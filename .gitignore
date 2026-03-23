@@ -1,0 +1,29 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+
+# Database (runtime artifact)
+backend/scrapbook.db
+
+# Uploaded media (user content, not source code)
+backend/media/photos/*
+backend/media/audio/*
+!backend/media/photos/.gitkeep
+!backend/media/audio/.gitkeep
+
+# Node
+Digital_Scrapbook/node_modules/
+Digital_Scrapbook/dist/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.idea/

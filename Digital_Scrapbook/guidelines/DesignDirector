@@ -1,0 +1,113 @@
+# Director of Product Design – Readiness Map
+
+## Role scope (context)
+
+- Set design vision and strategy; align design work to business and product objectives.
+- Build and lead a high‑performing design team, including hiring, coaching, and performance management.
+- Oversee end‑to‑end product design quality across multiple surfaces and initiatives.
+- Implement and evolve design systems, research practices, and metrics that scale.
+
+Useful overviews of the role:
+- [Product Design Director – responsibilities (Intelligent People)](https://www.intelligentpeople.co.uk/product-design-director/)
+- [Example Product Design Director JD – Yardstick](https://yardstick.team/job-description/product-design-director)
+- [Primary responsibilities of a Director of Product Design – ZipRecruiter](https://www.ziprecruiter.com/e/What-are-the-primary-responsibilities-of-a-Director-Of-Product-Design-on-a-day-to-day-basis)
+
+
+---
+
+## Prepare a portfolio of project work
+
+**Goal:** Show business impact, systems thinking, and leadership—not just visuals.
+
+What to include:
+- 3–5 case studies with: context, constraints, your role, process, tradeoffs, and outcomes.
+- Impact metrics: conversion, activation, retention, NPS, support volume, time to ship, etc.
+- Systems work: design systems, workflows, research programs, experimentation, or process change.
+- Leadership: how you set vision, aligned stakeholders, unblocked teams, mentored designers, and influenced the roadmap.
+
+Examples and references:
+- Example complex/identity portfolio:  
+  - [Sarah B – IndyKite case study](https://www.sarahb-uxd.com/indykite)
+- Case study structure and storytelling:  
+  - [UX research portfolio examples – User Interviews](https://www.userinterviews.com/blog/ux-research-portfolio-examples-templates)  
+  - [UX portfolio beginner’s guide – Coursera](https://www.coursera.org/articles/ux-designer-portfolio-beginners-guide)
+
+
+---
+
+## As a design leader – be ready to talk numbers
+
+**Goal:** Articulate how design moves key metrics.
+
+Impact stories to prepare:
+- Reduced support cases or handling time via clearer IA, flows, and in‑product education.
+- Increased revenue metrics (conversion, expansion, retention) via UX improvements and experiments.
+- Higher engagement (task completion, adoption, usage depth) tied to specific design changes.
+- Reduced rework, fewer abandoned features, faster cycles through better discovery and validation.
+
+Reference:
+- [Made to measure: Getting design leadership metrics right – McKinsey](https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/made-to-measure-getting-design-leadership-metrics-right)
+
+
+---
+
+## Frameworks to brush up on
+
+### Double Diamond design process
+
+Be able to talk through:
+- Phases: Discover → Define → Develop → Deliver.
+- Where research fits, how you manage divergence/convergence, and how you avoid jumping to solutions too early.
+- How you adapt the model for different team maturities and constraints.
+
+Reference:
+- [What is Double Diamond Design Process? – UXPin](https://www.uxpin.com/studio/blog/double-diamond-design-process/)
+
+### Design Thinking model
+
+Be ready to map your stories to:
+- Stages: Empathize → Define → Ideate → Prototype → Test.
+- How teams co‑create, prototype early, and iterate with users and data.
+
+Good to prepare 1–2 examples where you:
+- Reframed a problem based on research.
+- Used prototyping/testing to de‑risk a big bet.
+
+
+---
+
+## Philosophy
+
+Use this as “Operating principles for my leadership.”
+
+### Protect design integrity
+
+- Advocate for coherent end‑to‑end experiences, not isolated features.
+- Protect user trust: clarity, consent, explainability, and privacy—especially in AI‑heavy products.
+
+### User research as a scientific process
+
+- Hypothesis‑driven: define questions, hypotheses, and decisions up front.
+- Method‑fit: choose qualitative, quantitative, or mixed methods based on the decision to be made.
+- Treat research as a continuous practice, not a one‑off phase.
+
+References:
+- [Types of user research methods – User Interviews](https://www.userinterviews.com/ux-research-field-guide-chapter/user-research-types)
+- (Browse) [Research methods topic – Nielsen Norman Group](https://www.nngroup.com/topic/research-methods/)
+
+### Ambient AI design
+
+- Design AI that works in the background, minimizes cognitive load, and is easy to inspect, override, and correct.
+- Make data use, triggers, and model behavior legible; avoid “magic” that erodes trust.
+
+Reference:
+- [Ambient Intelligence – AI UX Design Patterns](https://www.aiuxdesign.guide/patterns/ambient-intelligence)
+
+
+---
+
+## Design systems
+
+**Goal:** Show you can build and evolve scalable, *simple* systems that serve multiple teams.
+
+Key po
