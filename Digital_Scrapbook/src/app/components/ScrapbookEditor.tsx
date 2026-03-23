@@ -26,7 +26,8 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
   const [story, setStory] = useState(editMilestone?.story ?? '');
   const [existingPhotos, setExistingPhotos] = useState<Photo[]>(editMilestone?.photos ?? []);
   const [photosToDelete, setPhotosToDelete] = useState<string[]>([]);
-  const [previews, setPreviews] = useState<Array<{ id: string; previewUrl: string; file: File; type: string; caption?: string }>>([]);
+  const [previews, setPreviews] = useState<Array<{ id: string; previewUrl: string; file: File; type: string; caption?: string }>>([])
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -56,37 +57,43 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-    const entryYear = year ? parseInt(year) : new Date().getFullYear();
-    const dateString = month ? `${month} ${entryYear}` : `${entryYear}`;
+    try {
+      const entryYear = year ? parseInt(year) : new Date().getFullYear();
+      const dateString = month ? `${month} ${entryYear}` : `${entryYear}`;
 
-    if (isEdit && editMilestone) {
-      const milestone = await updateMilestone(editMilestone.id, {
-        year: entryYear,
-        title: title || 'Untitled',
-        date: dateString,
-        description: description || '',
-        story: story || '',
-      });
-      await Promise.all(photosToDelete.map(pid => deletePhoto(editMilestone.id, pid).catch(() => {})));
-      const uploadedPhotos = await Promise.all(
-        previews.map((pr) => uploadPhoto(editMilestone.id, pr.file, pr.caption))
-      );
-      previews.forEach((pr) => URL.revokeObjectURL(pr.previewUrl));
-      onUpdate?.({ ...milestone, photos: [...existingPhotos, ...uploadedPhotos] });
-    } else {
-      const milestone = await createMilestone({
-        year: entryYear,
-        title: title || 'Untitled',
-        date: dateString,
-        description: description || '',
-        story: story || '',
-      });
-      const uploadedPhotos = await Promise.all(
-        previews.map((pr) => uploadPhoto(milestone.id, pr.file, pr.caption))
-      );
-      previews.forEach((pr) => URL.revokeObjectURL(pr.previewUrl));
-      onCreate({ ...milestone, photos: uploadedPhotos });
+      if (isEdit && editMilestone) {
+        const milestone = await updateMilestone(editMilestone.id, {
+          year: entryYear,
+          title: title || 'Untitled',
+          date: dateString,
+          description: description || '',
+          story: story || '',
+        });
+        await Promise.all(photosToDelete.map(pid => deletePhoto(editMilestone.id, pid).catch(() => {})));
+        const uploadedPhotos = await Promise.all(
+          previews.map((pr) => uploadPhoto(editMilestone.id, pr.file, pr.caption))
+        );
+        previews.forEach((pr) => URL.revokeObjectURL(pr.previewUrl));
+        onUpdate?.({ ...milestone, photos: [...existingPhotos, ...uploadedPhotos] });
+      } else {
+        const milestone = await createMilestone({
+          year: entryYear,
+          title: title || 'Untitled',
+          date: dateString,
+          description: description || '',
+          story: story || '',
+        });
+        const uploadedPhotos = await Promise.all(
+          previews.map((pr) => uploadPhoto(milestone.id, pr.file, pr.caption))
+        );
+        previews.forEach((pr) => URL.revokeObjectURL(pr.previewUrl));
+        onCreate({ ...milestone, photos: uploadedPhotos });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -194,7 +201,7 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
               )}
 
               <div className="flex gap-3">
-                <Button type="submit">{isEdit ? 'Save Changes' : 'Create'}</Button>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : isEdit ? 'Save Changes' : 'Create'}</Button>
                 <Button variant="ghost" type="button" onClick={onClose}>Cancel</Button>
               </div>
             </form>

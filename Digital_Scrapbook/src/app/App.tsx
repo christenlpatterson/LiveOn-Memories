@@ -105,7 +105,7 @@ export default function App() {
     : null;
 
   const handleUpdateMilestone = (updated: Milestone) => {
-    setMilestones(prev => prev.map(m => m.id === updated.id ? updated : m));
+    setMilestones(prev => prev.map(m => String(m.id) === String(updated.id) ? updated : m));
     setEditingMilestoneId(null);
     toast.success('Page updated.');
   };
