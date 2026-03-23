@@ -31,11 +31,12 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
       </div>
 
       {/* Horizontal Timeline - scrollable, takes remaining height */}
-      <div className="relative flex-1 overflow-x-auto px-4 flex items-center">
-        {/* Timeline container */}
+      <div className="relative flex-1">
+        {/* Gold line on the viewport-sized wrapper — always edge to edge, never clipped */}
+        <div className="pointer-events-none absolute left-0 right-0 h-1 bg-gradient-to-r from-[#c9a961] via-[#d4a743] to-[#c9a961]" style={{ top: '50%', transform: 'translateY(-50%)' }} />
+        {/* Scroll container fills the same space */}
+        <div className="absolute inset-0 overflow-x-auto px-4 flex items-center">
           <div className="relative flex justify-start items-center px-8" style={{ minWidth: 'max-content', width: `${milestones.length * 150}px` }}>
-          {/* Timeline line — inside scroll container, extends past last milestone */}
-          <div className="pointer-events-none absolute left-0 h-1 bg-gradient-to-r from-[#c9a961] via-[#d4a743] to-[#c9a961]" style={{ top: '50%', transform: 'translateY(-50%)', width: 'calc(100% + 600px)' }} />
 
           {milestones.map((milestone, index) => {
             const isAbove = index % 2 === 0;
@@ -94,6 +95,7 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </div>
