@@ -93,9 +93,33 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
             {/* Photos */}
             {milestone.photos && milestone.photos.length > 0 && (
               <div className="mb-10">
-                {milestone.photos.length >= 4 ? (
+                {milestone.photos.length === 1 ? (
+                  <AnnotatedPhoto
+                    photo={milestone.photos[0]}
+                    onAddAnnotation={
+                      onAddAnnotation
+                        ? (x, y, text, author) => onAddAnnotation(milestone.photos[0].id, x, y, text, author)
+                        : undefined
+                    }
+                  />
+                ) : milestone.photos.length === 2 ? (
                   <div className="flex gap-8">
-                    {/* Left column: photos 1 & 2 */}
+                    {milestone.photos.map((photo) => (
+                      <div key={photo.id} className="flex-1">
+                        <AnnotatedPhoto
+                          photo={photo}
+                          onAddAnnotation={
+                            onAddAnnotation
+                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                              : undefined
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex gap-8">
+                    {/* Left column: photos 1 & 2 stacked */}
                     <div className="flex flex-col gap-8 flex-1">
                       {milestone.photos.slice(0, 2).map((photo) => (
                         <AnnotatedPhoto
@@ -123,24 +147,6 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
                         />
                       ))}
                     </div>
-                  </div>
-                ) : (
-                  <div className={`grid gap-8 ${
-                    milestone.photos.length === 1
-                      ? 'grid-cols-1'
-                      : 'grid-cols-2'
-                  }`}>
-                    {milestone.photos.map((photo) => (
-                      <AnnotatedPhoto
-                        key={photo.id}
-                        photo={photo}
-                        onAddAnnotation={
-                          onAddAnnotation
-                            ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                            : undefined
-                        }
-                      />
-                    ))}
                   </div>
                 )}
               </div>
