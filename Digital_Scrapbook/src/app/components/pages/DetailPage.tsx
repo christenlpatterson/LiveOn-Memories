@@ -11,6 +11,7 @@ interface DetailPageProps {
   milestone: Milestone;
   onBack: () => void;
   onAddComment: (author: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
   onAddAnnotation?: (photoId: string, x: number, y: number, text: string, author: string) => void;
   onDeleteMilestone?: () => void;
   onAddAudioClip?: (blob: Blob) => void;
@@ -18,7 +19,7 @@ interface DetailPageProps {
   onEditMilestone?: () => void;
 }
 
-export function DetailPage({ milestone, onBack, onAddComment, onAddAnnotation, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
+export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, onAddAnnotation, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -68,9 +69,14 @@ export function DetailPage({ milestone, onBack, onAddComment, onAddAnnotation, o
                   {milestone.year}
                 </div>
               </div>
-              <h1 className="text-4xl mb-4 text-[#2c3e50] tracking-wide">
+              <h1 className="text-4xl mb-2 text-[#2c3e50] tracking-wide">
                 {milestone.title}
               </h1>
+              {milestone.description && milestone.description.trim() && (
+                <p className="text-2xl text-[#c9a961] mt-1" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                  {milestone.description}
+                </p>
+              )}
             </div>
 
             {/* Story */}
@@ -87,27 +93,56 @@ export function DetailPage({ milestone, onBack, onAddComment, onAddAnnotation, o
             {/* Photos */}
             {milestone.photos && milestone.photos.length > 0 && (
               <div className="mb-10">
-                <div className={`grid gap-8 ${
-                  milestone.photos.length === 1 
-                    ? 'grid-cols-1' 
-                    : milestone.photos.length === 2 
-                    ? 'grid-cols-1 md:grid-cols-2' 
-                    : milestone.photos.length === 3
-                    ? 'grid-cols-1 md:grid-cols-3'
-                    : 'grid-cols-1 md:grid-cols-2'
-                }`}>
-                  {milestone.photos.map((photo) => (
-                    <AnnotatedPhoto 
-                      key={photo.id} 
-                      photo={photo}
-                      onAddAnnotation={
-                        onAddAnnotation 
-                          ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                          : undefined
-                      }
-                    />
-                  ))}
-                </div>
+                {milestone.photos.length >= 4 ? (
+                  <div className="flex gap-8">
+                    {/* Left column: photos 1 & 2 */}
+                    <div className="flex flex-col gap-8 flex-1">
+                      {milestone.photos.slice(0, 2).map((photo) => (
+                        <AnnotatedPhoto
+                          key={photo.id}
+                          photo={photo}
+                          onAddAnnotation={
+                            onAddAnnotation
+                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                              : undefined
+                          }
+                        />
+                      ))}
+                    </div>
+                    {/* Right column: photos 3 & 4 */}
+                    <div className="flex flex-col gap-8 flex-1">
+                      {milestone.photos.slice(2, 4).map((photo) => (
+                        <AnnotatedPhoto
+                          key={photo.id}
+                          photo={photo}
+                          onAddAnnotation={
+                            onAddAnnotation
+                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                              : undefined
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`grid gap-8 ${
+                    milestone.photos.length === 1
+                      ? 'grid-cols-1'
+                      : 'grid-cols-2'
+                  }`}>
+                    {milestone.photos.map((photo) => (
+                      <AnnotatedPhoto
+                        key={photo.id}
+                        photo={photo}
+                        onAddAnnotation={
+                          onAddAnnotation
+                            ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -127,7 +162,6 @@ export function DetailPage({ milestone, onBack, onAddComment, onAddAnnotation, o
         {milestone.audioClips && milestone.audioClips.length > 0 && (
           <Card className="bg-white border-gray-200 shadow-2xl mb-6">
             <CardContent className="p-8">
-              <h2 className="text-xl mb-4 text-[#2c3e50] tracking-wide">Voice Recordings</h2>
               <div className="space-y-3">
                 {milestone.audioClips.map((clip, i) => (
                   <div key={clip.id} className="flex items-center gap-3">
@@ -166,9 +200,22 @@ export function DetailPage({ milestone, onBack, onAddComment, onAddAnnotation, o
             <VisitorLog 
               comments={milestone.comments}
               onAddComment={onAddComment}
+              onDeleteComment={onDeleteComment}
             />
           </CardContent>
         </Card>
+
+        {/* Return to Timeline button */}
+        <div className="mt-6">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="hover:bg-white/50 text-[#5a6c7d]"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Return to Timeline
+          </Button>
+        </div>
 
         {/* Bottom row: Delete Page (left) + Edit Page (center) + Mic (right) */}
         <div className="mt-6 mb-8 flex justify-between items-center">

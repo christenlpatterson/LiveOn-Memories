@@ -257,6 +257,14 @@ def add_comment(mid):
     return jsonify(c.to_dict()), 201
 
 
+@app.delete("/api/milestones/<string:mid>/comments/<string:cid>")
+def delete_comment(mid, cid):
+    c = db.get_or_404(Comment, cid)
+    db.session.delete(c)
+    db.session.commit()
+    return "", 204
+
+
 # ── Audio routes ───────────────────────────────────────────────────────────────
 
 @app.post("/api/milestones/<string:mid>/audio")

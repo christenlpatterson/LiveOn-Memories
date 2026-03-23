@@ -9,9 +9,10 @@ import { MessageSquare } from "lucide-react";
 interface VisitorLogProps {
   comments: Comment[];
   onAddComment?: (author: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
 }
 
-export function VisitorLog({ comments, onAddComment }: VisitorLogProps) {
+export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorLogProps) {
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [author, setAuthor] = useState("");
   const [text, setText] = useState("");
@@ -119,6 +120,15 @@ export function VisitorLog({ comments, onAddComment }: VisitorLogProps) {
                       <div className="text-sm text-[#6b7c8d]">{comment.date}</div>
                     </div>
                   </div>
+                  {onDeleteComment && (
+                    <button
+                      onClick={() => onDeleteComment(comment.id)}
+                      className="text-xs text-gray-300 hover:text-red-400 transition-colors opacity-60 hover:opacity-100"
+                      title="Delete entry"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
                 <p className="text-[#5a6c7d] leading-relaxed">{comment.text}</p>
               </CardContent>

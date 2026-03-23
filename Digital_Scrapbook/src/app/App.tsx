@@ -6,6 +6,7 @@ import { Milestone } from './data/types';
 import {
   getMilestones,
   addComment,
+  deleteComment,
   addAnnotation,
   deleteMilestone,
   uploadAudio,
@@ -41,6 +42,16 @@ export default function App() {
       ));
       toast.success('Comment posted!');
     } catch { toast.error('Failed to post comment.'); }
+  };
+
+  const handleDeleteComment = async (milestoneId: string, commentId: string) => {
+    try {
+      await deleteComment(milestoneId, commentId);
+      setMilestones(prev => prev.map(m =>
+        m.id === milestoneId ? { ...m, comments: m.comments.filter(c => String(c.id) !== String(commentId)) } : m
+      ));
+      toast.success('Entry deleted.');
+    } catch { toast.error('Failed to delete entry.'); }
   };
 
   const handleAddAnnotation = async (
@@ -131,6 +142,7 @@ export default function App() {
           milestone={selectedMilestone}
           onBack={() => setSelectedMilestoneId(null)}
           onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
+          onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
           onAddAnnotation={(photoId, x, y, text, author) => 
             handleAddAnnotation(selectedMilestone.id, photoId, x, y, text, author)
           }

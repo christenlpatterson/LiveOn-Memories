@@ -95,6 +95,10 @@ export function addComment(milestoneId: string, author: string, text: string): P
   });
 }
 
+export function deleteComment(milestoneId: string, commentId: string): Promise<void> {
+  return req(`/api/milestones/${milestoneId}/comments/${commentId}`, { method: 'DELETE' });
+}
+
 // ── Audio clips ───────────────────────────────────────────────────────────────
 
 export function uploadAudio(milestoneId: string, blob: Blob): Promise<AudioClip> {
