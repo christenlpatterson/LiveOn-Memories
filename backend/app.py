@@ -6,6 +6,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 BASE_DIR = Path(__file__).parent
 
@@ -14,7 +15,7 @@ BASE_DIR = Path(__file__).parent
 MEDIA_DIR   = Path(os.environ.get("MEDIA_ROOT",  str(BASE_DIR / "media")))
 PHOTOS_DIR  = MEDIA_DIR / "photos"
 AUDIO_DIR   = MEDIA_DIR / "audio"
-INTAKE_DIR  = Path(os.environ.get("INTAKE_ROOT", str(MEDIA_DIR / "temp")))
+INTAKE_DIR  = Path(os.environ.get("INTAKE_ROOT", str(MEDIA_DIR / "intakes")))
 DB_PATH     = os.environ.get("DB_PATH", str(BASE_DIR / "scrapbook.db"))
 
 PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -22,6 +23,8 @@ AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 INTAKE_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
+# Trust one reverse proxy hop (Render) so request.host_url uses forwarded https scheme.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
@@ -140,7 +143,7 @@ class PhotoIntakeNote(db.Model):
             "year": self.year or "",
             "notes": self.notes or "",
             "updatedAt": self.updated_at or "",
-            "url": f"{request.host_url}media/temp/{self.filename}",
+            "url": f"{request.host_url}media/intakes/{self.filename}",
         }
 
 
@@ -154,8 +157,9 @@ def serve_photo(filename):
 def serve_audio(filename):
     return send_from_directory(AUDIO_DIR, filename)
 
+@app.get("/media/intakes/<path:filename>")
 @app.get("/media/temp/<path:filename>")
-def serve_temp_photo(filename):
+def serve_intake_photo(filename):
     return send_from_directory(INTAKE_DIR, filename)
 
 
@@ -344,7 +348,7 @@ def list_photo_intake_entries():
         else:
             payload.append({
                 "filename": filename,
-                "url": f"{request.host_url}media/temp/{filename}",
+                "url": f"{request.host_url}media/intakes/{filename}",
                 "year": "",
                 "notes": "",
                 "updatedAt": "",
