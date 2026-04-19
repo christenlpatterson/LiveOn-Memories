@@ -15,7 +15,10 @@ BASE_DIR = Path(__file__).parent
 MEDIA_DIR   = Path(os.environ.get("MEDIA_ROOT",  str(BASE_DIR / "media")))
 PHOTOS_DIR  = MEDIA_DIR / "photos"
 AUDIO_DIR   = MEDIA_DIR / "audio"
-INTAKE_DIR  = Path(os.environ.get("INTAKE_ROOT", str(MEDIA_DIR / "intakes")))
+# Intake images are seeded from the git repo, so default to BASE_DIR even when
+# MEDIA_ROOT is overridden (e.g. Render persistent disk).  Override explicitly
+# with INTAKE_ROOT if needed.
+INTAKE_DIR  = Path(os.environ.get("INTAKE_ROOT", str(BASE_DIR / "media" / "intakes")))
 DB_PATH     = os.environ.get("DB_PATH", str(BASE_DIR / "scrapbook.db"))
 
 PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
