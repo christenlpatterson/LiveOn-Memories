@@ -8,11 +8,8 @@ __pycache__/
 # Database (runtime artifact)
 backend/scrapbook.db
 
-# Uploaded media (user content, not source code)
-backend/media/photos/*
-backend/media/audio/*
-!backend/media/photos/.gitkeep
-!backend/media/audio/.gitkeep
+# Uploaded media
+# Photos and audio are intentionally tracked in this repository.
 
 # Node
 Digital_Scrapbook/node_modules/
