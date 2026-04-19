@@ -158,7 +158,6 @@ def serve_audio(filename):
     return send_from_directory(AUDIO_DIR, filename)
 
 @app.get("/media/intakes/<path:filename>")
-@app.get("/media/temp/<path:filename>")
 def serve_intake_photo(filename):
     return send_from_directory(INTAKE_DIR, filename)
 
@@ -326,11 +325,12 @@ def delete_audio(mid, cid):
 
 def _photo_file_list():
     allowed = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
-    files = []
-    for item in sorted(INTAKE_DIR.iterdir(), key=lambda p: p.name.lower()):
-        if item.is_file() and item.suffix.lower() in allowed:
-            files.append(item.name)
-    return files
+    files = [
+        item.name
+        for item in INTAKE_DIR.iterdir()
+        if item.is_file() and item.suffix.lower() in allowed
+    ]
+    return sorted(files, key=str.lower)
 
 
 @app.get("/api/photo-intake")
