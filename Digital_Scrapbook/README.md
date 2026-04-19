@@ -82,6 +82,60 @@ This starts both servers:
 
 Press **Ctrl+C** to stop both servers.
 
+## Sync Production Content To Local
+
+From the repository root, use the sync helper:
+
+```bash
+./sync-content.sh pull --api-base https://YOUR-PROD-BACKEND --reset
+```
+
+What this does:
+
+- Exports `GET /api/milestones` into a local bundle folder under `backups/`
+- Downloads media referenced by `/media/photos/...` and `/media/audio/...`
+- Hydrates your local backend database and media folders from that bundle
+
+Other useful commands:
+
+```bash
+# Export only (no local import)
+./sync-content.sh export --api-base https://YOUR-PROD-BACKEND
+
+# Hydrate later from an existing bundle
+./sync-content.sh hydrate --bundle backups/bundle-YYYYMMDD-HHMMSS --reset
+
+# Export and keep bundle only (skip hydrate)
+./sync-content.sh pull --api-base https://YOUR-PROD-BACKEND --skip-hydrate
+```
+
+Notes:
+
+- Use `--reset` to replace local content instead of merging.
+- External image URLs are preserved as URLs.
+- Local media is written into `backend/media/photos` and `backend/media/audio`.
+
+### Recurring Sync Shortcut
+
+Use the preconfigured script for regular pulls from your production backend:
+
+```bash
+./sync-prod-content.sh
+```
+
+Optional flags:
+
+```bash
+# Merge instead of replacing local content
+./sync-prod-content.sh --no-reset
+
+# Export bundle only (do not hydrate local)
+./sync-prod-content.sh --export-only
+
+# Temporarily override backend URL
+./sync-prod-content.sh --api-base https://another-backend.onrender.com
+```
+
 ## Features
 
 - **Timeline** — chronological view of all family milestones

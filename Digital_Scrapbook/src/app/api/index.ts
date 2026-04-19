@@ -1,5 +1,13 @@
 import type { Milestone, Photo, Comment, Annotation, AudioClip } from '../data/types';
 
+export interface PhotoIntakeEntry {
+  filename: string;
+  url: string;
+  year: string;
+  notes: string;
+  updatedAt: string;
+}
+
 // In dev, Vite proxies /api and /media to http://localhost:5000.
 // In production, set VITE_API_BASE to the deployed backend origin.
 const BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? '';
@@ -110,4 +118,21 @@ export function uploadAudio(milestoneId: string, blob: Blob): Promise<AudioClip>
 
 export function deleteAudioClip(milestoneId: string, clipId: string): Promise<void> {
   return req(`/api/milestones/${milestoneId}/audio/${clipId}`, { method: 'DELETE' });
+}
+
+// ── Photo intake ──────────────────────────────────────────────────────────────
+
+export function getPhotoIntakeEntries(): Promise<PhotoIntakeEntry[]> {
+  return req('/api/photo-intake');
+}
+
+export function savePhotoIntakeEntry(
+  filename: string,
+  payload: { year: string; notes: string },
+): Promise<PhotoIntakeEntry> {
+  return req(`/api/photo-intake/${encodeURIComponent(filename)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Timeline } from './components/Timeline';
 import { DetailPage } from './components/pages/DetailPage';
+import { PhotoIntakePage } from './components/pages/PhotoIntakePage';
 import { ScrapbookEditor } from './components/ScrapbookEditor';
 import { Milestone } from './data/types';
 import {
@@ -21,6 +22,7 @@ export default function App() {
   const [loading, setLoading]       = useState(true);
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [showPhotoIntake, setShowPhotoIntake] = useState(false);
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -184,6 +186,15 @@ export default function App() {
     );
   }
 
+  if (showPhotoIntake) {
+    return (
+      <>
+        <PhotoIntakePage onBack={() => setShowPhotoIntake(false)} />
+        <Toaster />
+      </>
+    );
+  }
+
   return (
     <>
       <Timeline 
@@ -192,7 +203,10 @@ export default function App() {
         onDeleteMilestone={handleDeleteMilestone}
       />
 
-      <div className="fixed bottom-6 right-6">
+      <div className="fixed bottom-6 right-6 flex gap-2">
+        <Button variant="outline" onClick={() => setShowPhotoIntake(true)}>
+          Photo Intake
+        </Button>
         <Button onClick={() => setShowEditor(true)}>Add Entry</Button>
       </div>
 

@@ -14,10 +14,12 @@ BASE_DIR = Path(__file__).parent
 MEDIA_DIR   = Path(os.environ.get("MEDIA_ROOT",  str(BASE_DIR / "media")))
 PHOTOS_DIR  = MEDIA_DIR / "photos"
 AUDIO_DIR   = MEDIA_DIR / "audio"
+INTAKE_DIR  = Path(os.environ.get("INTAKE_ROOT", str(MEDIA_DIR / "temp")))
 DB_PATH     = os.environ.get("DB_PATH", str(BASE_DIR / "scrapbook.db"))
 
 PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+INTAKE_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
 CORS(app)
@@ -125,6 +127,23 @@ class AudioClip(db.Model):
         return {"id": self.id, "url": url, "date": self.date, "label": self.label}
 
 
+class PhotoIntakeNote(db.Model):
+    __tablename__ = "photo_intake_notes"
+    filename   = db.Column(db.String, primary_key=True)
+    year       = db.Column(db.String, default="")
+    notes      = db.Column(db.Text, default="")
+    updated_at = db.Column(db.String, default="")
+
+    def to_dict(self):
+        return {
+            "filename": self.filename,
+            "year": self.year or "",
+            "notes": self.notes or "",
+            "updatedAt": self.updated_at or "",
+            "url": f"{request.host_url}media/temp/{self.filename}",
+        }
+
+
 # ── Media serving ─────────────────────────────────────────────────────────────
 
 @app.get("/media/photos/<path:filename>")
@@ -134,6 +153,10 @@ def serve_photo(filename):
 @app.get("/media/audio/<path:filename>")
 def serve_audio(filename):
     return send_from_directory(AUDIO_DIR, filename)
+
+@app.get("/media/temp/<path:filename>")
+def serve_temp_photo(filename):
+    return send_from_directory(INTAKE_DIR, filename)
 
 
 # ── Milestone routes ───────────────────────────────────────────────────────────
@@ -293,6 +316,65 @@ def delete_audio(mid, cid):
     db.session.delete(clip)
     db.session.commit()
     return "", 204
+
+
+# ── Photo intake routes ───────────────────────────────────────────────────────
+
+def _photo_file_list():
+    allowed = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    files = []
+    for item in sorted(INTAKE_DIR.iterdir(), key=lambda p: p.name.lower()):
+        if item.is_file() and item.suffix.lower() in allowed:
+            files.append(item.name)
+    return files
+
+
+@app.get("/api/photo-intake")
+def list_photo_intake_entries():
+    notes = {
+        n.filename: n
+        for n in PhotoIntakeNote.query.all()
+    }
+
+    payload = []
+    for filename in _photo_file_list():
+        note = notes.get(filename)
+        if note:
+            payload.append(note.to_dict())
+        else:
+            payload.append({
+                "filename": filename,
+                "url": f"{request.host_url}media/temp/{filename}",
+                "year": "",
+                "notes": "",
+                "updatedAt": "",
+            })
+    return jsonify(payload)
+
+
+@app.post("/api/photo-intake/<path:filename>")
+def save_photo_intake_entry(filename):
+    safe_filename = Path(filename).name
+    if not safe_filename:
+        abort(400)
+
+    if not (INTAKE_DIR / safe_filename).exists():
+        abort(404)
+
+    data = request.get_json(silent=True) or {}
+    year = str(data.get("year", "")).strip()
+    notes = str(data.get("notes", "")).strip()
+
+    entry = db.session.get(PhotoIntakeNote, safe_filename)
+    if not entry:
+        entry = PhotoIntakeNote(filename=safe_filename)
+        db.session.add(entry)
+
+    entry.year = year
+    entry.notes = notes
+    entry.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    db.session.commit()
+    return jsonify(entry.to_dict())
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
