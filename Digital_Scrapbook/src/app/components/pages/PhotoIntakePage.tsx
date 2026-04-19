@@ -115,7 +115,8 @@ export function PhotoIntakePage({ onBack }: PhotoIntakePageProps) {
                     <img
                       src={entry.url}
                       alt={entry.filename}
-                      className="w-full max-w-[300px] h-auto rounded-md border border-[#d8cebb] object-contain"
+                      className="rounded-md border border-[#d8cebb] object-contain"
+                      style={{ maxWidth: '300px', maxHeight: '400px', width: 'auto', height: 'auto' }}
                       loading="lazy"
                     />
                   </div>
