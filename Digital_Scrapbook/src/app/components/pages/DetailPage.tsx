@@ -103,14 +103,16 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
             {milestone.photos && milestone.photos.length > 0 && (
               <div className="mb-10">
                 {milestone.photos.length === 1 ? (
-                  <AnnotatedPhoto
-                    photo={milestone.photos[0]}
-                    onAddAnnotation={
-                      onAddAnnotation
-                        ? (x, y, text, author) => onAddAnnotation(milestone.photos[0].id, x, y, text, author)
-                        : undefined
-                    }
-                  />
+                  <div className="w-[70%] mx-auto">
+                    <AnnotatedPhoto
+                      photo={milestone.photos[0]}
+                      onAddAnnotation={
+                        onAddAnnotation
+                          ? (x, y, text, author) => onAddAnnotation(milestone.photos[0].id, x, y, text, author)
+                          : undefined
+                      }
+                    />
+                  </div>
                 ) : milestone.photos.length === 2 ? (
                   <div className="flex gap-8">
                     {milestone.photos.map((photo) => (
