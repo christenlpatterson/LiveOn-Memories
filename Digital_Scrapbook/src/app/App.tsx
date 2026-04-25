@@ -212,7 +212,7 @@ export default function App() {
       </div>
 
       <Toaster />
-      <Butterfly />
+      <Butterfly opacity={0.7} />
       <Butterfly scale={0.65} delay={2} pathVariant={2} />
     </>
   );

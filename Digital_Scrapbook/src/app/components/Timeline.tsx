@@ -18,10 +18,20 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
           alt="Masthead"
           className="absolute right-0 top-0 h-full w-auto object-contain"
         />
+        {/* White-to-transparent gradient overlay so the title stays legible on small screens */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 75%)',
+          }}
+        />
         <div className="absolute inset-0 flex items-center px-12">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl mb-2" style={{ fontFamily: "'Playfair Display', serif", color: '#c9a961' }}>
-              Grams and Granddad
+              <span className="whitespace-nowrap">Grams &amp;</span>
+              <br className="sm:hidden" />
+              <span className="sm:before:content-['_']">Granddad</span>
             </h1>
             <p className="text-xl md:text-2xl lg:text-3xl" style={{ fontFamily: "'Playfair Display', serif", color: '#d4a743' }}>
               Treasured Memories

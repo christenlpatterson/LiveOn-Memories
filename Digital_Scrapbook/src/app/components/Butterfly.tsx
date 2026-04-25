@@ -9,9 +9,11 @@ interface ButterflyProps {
   delay?: number;
   /** Which flight-path keyframes to use. */
   pathVariant?: 1 | 2;
+  /** Overall opacity (0–1). Defaults to 0.85. */
+  opacity?: number;
 }
 
-export function Butterfly({ scale = 1, delay = 0, pathVariant = 1 }: ButterflyProps = {}) {
+export function Butterfly({ scale = 1, delay = 0, pathVariant = 1, opacity = 0.85 }: ButterflyProps = {}) {
   const flightClass = pathVariant === 2 ? 'butterfly-flight-2' : 'butterfly-flight';
   return (
     <div
@@ -33,7 +35,7 @@ export function Butterfly({ scale = 1, delay = 0, pathVariant = 1 }: ButterflyPr
           width="100%"
           height="100%"
           preserveAspectRatio="none"
-          style={{ overflow: 'visible', opacity: 0.85 }}
+          style={{ overflow: 'visible', opacity }}
         >
           {/* Body */}
           <ellipse cx="32" cy="32" rx="1.2" ry="9" fill="#ffffff" opacity="0.95" />
