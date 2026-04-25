@@ -16,6 +16,7 @@ import {
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { Button } from './components/ui/button';
+import { Butterfly } from './components/Butterfly';
 
 export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
@@ -211,6 +212,8 @@ export default function App() {
       </div>
 
       <Toaster />
+      <Butterfly />
+      <Butterfly scale={0.65} delay={2} pathVariant={2} />
     </>
   );
 }
