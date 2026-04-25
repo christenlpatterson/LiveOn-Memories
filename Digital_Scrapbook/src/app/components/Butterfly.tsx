@@ -11,10 +11,24 @@ interface ButterflyProps {
   pathVariant?: 1 | 2;
   /** Overall opacity (0–1). Defaults to 0.85. */
   opacity?: number;
+  /** Render upper wing lobes that reach higher above the body. */
+  tallTopWings?: boolean;
 }
 
-export function Butterfly({ scale = 1, delay = 0, pathVariant = 1, opacity = 0.85 }: ButterflyProps = {}) {
+export function Butterfly({
+  scale = 1,
+  delay = 0,
+  pathVariant = 1,
+  opacity = 0.85,
+  tallTopWings = false,
+}: ButterflyProps = {}) {
   const flightClass = pathVariant === 2 ? 'butterfly-flight-2' : 'butterfly-flight';
+  const leftWingPath = tallTopWings
+    ? 'M32 24 C 6 -4, -2 16, 12 33 C 6 38, 20 42, 32 40 Z'
+    : 'M32 24 C 10 8, 2 24, 12 33 C 6 38, 20 42, 32 40 Z';
+  const rightWingPath = tallTopWings
+    ? 'M32 24 C 58 -4, 66 16, 52 33 C 58 38, 44 42, 32 40 Z'
+    : 'M32 24 C 54 8, 62 24, 52 33 C 58 38, 44 42, 32 40 Z';
   return (
     <div
       aria-hidden="true"
@@ -63,7 +77,7 @@ export function Butterfly({ scale = 1, delay = 0, pathVariant = 1, opacity = 0.8
             style={{ transformOrigin: '100% 50%', transformBox: 'fill-box' as const }}
           >
             <path
-              d="M32 24 C 10 8, 2 24, 12 33 C 6 38, 20 42, 32 40 Z"
+              d={leftWingPath}
               fill="#ffffff"
               stroke="#ffffff"
               strokeWidth="0.5"
@@ -77,7 +91,7 @@ export function Butterfly({ scale = 1, delay = 0, pathVariant = 1, opacity = 0.8
             style={{ transformOrigin: '0% 50%', transformBox: 'fill-box' as const }}
           >
             <path
-              d="M32 24 C 54 8, 62 24, 52 33 C 58 38, 44 42, 32 40 Z"
+              d={rightWingPath}
               fill="#ffffff"
               stroke="#ffffff"
               strokeWidth="0.5"

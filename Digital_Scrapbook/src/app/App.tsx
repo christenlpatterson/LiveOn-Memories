@@ -212,8 +212,8 @@ export default function App() {
       </div>
 
       <Toaster />
-      <Butterfly opacity={0.7} />
-      <Butterfly scale={0.65} delay={2} pathVariant={2} />
+      <Butterfly opacity={0.7} tallTopWings />
+      <Butterfly scale={0.65} delay={2} pathVariant={2} tallTopWings />
     </>
   );
 }
