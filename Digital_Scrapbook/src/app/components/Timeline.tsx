@@ -69,9 +69,6 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
                       <h3 className="text-sm mb-1 text-[#2c3e50]" style={{ fontFamily: "'Playfair Display', serif" }}>
                         {milestone.title}
                       </h3>
-                      <p className="text-xs text-[#6b7c8d] line-clamp-2">
-                        {milestone.description}
-                      </p>
                     </CardContent>
                   </Card>
                 </div>
