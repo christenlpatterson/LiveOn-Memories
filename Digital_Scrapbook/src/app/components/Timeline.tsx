@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Milestone } from "../data/types";
 import { Card, CardContent } from "./ui/card";
 import mastheadImage from '../../assets/c91b4e962107e52ada9704179f213d4fc1fc70b0.png';
@@ -6,9 +7,25 @@ interface TimelineProps {
   milestones: Milestone[];
   onMilestoneClick: (id: string) => void;
   onDeleteMilestone?: (id: string) => void;
+  focusMilestoneId?: string | null;
 }
 
-export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: TimelineProps) {
+export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone, focusMilestoneId }: TimelineProps) {
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const milestoneRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (!focusMilestoneId) return;
+    const el = milestoneRefs.current[focusMilestoneId];
+    const container = scrollContainerRef.current;
+    if (!el || !container) return;
+    // Center the milestone horizontally within the scroll container.
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const offset = (elRect.left + elRect.width / 2) - (containerRect.left + containerRect.width / 2);
+    container.scrollTo({ left: container.scrollLeft + offset, behavior: 'smooth' });
+  }, [focusMilestoneId, milestones]);
+
   return (
     <div className="h-screen flex flex-col bg-[#e8eef5] overflow-x-hidden">
       {/* Masthead with butterfly tree and title - stays fixed */}
@@ -45,7 +62,7 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
         {/* Gold line on the viewport-sized wrapper — always edge to edge, never clipped */}
         <div className="pointer-events-none absolute left-0 right-0 h-1 bg-gradient-to-r from-[#c9a961] via-[#d4a743] to-[#c9a961]" style={{ top: '50%', transform: 'translateY(-50%)' }} />
         {/* Scroll container fills the same space */}
-        <div className="absolute inset-0 overflow-x-auto px-4 flex items-center">
+        <div ref={scrollContainerRef} className="absolute inset-0 overflow-x-auto px-4 flex items-center">
           <div className="relative flex justify-start items-center px-8" style={{ minWidth: 'max-content', width: `${milestones.length * 150}px` }}>
 
           {milestones.map((milestone, index) => {
@@ -54,6 +71,7 @@ export function Timeline({ milestones, onMilestoneClick, onDeleteMilestone }: Ti
             return (
                 <div 
                   key={milestone.id} 
+                  ref={(el) => { milestoneRefs.current[milestone.id] = el; }}
                   className="relative flex flex-col items-center"
                   style={{ width: '150px', flexShrink: 0 }}
               >

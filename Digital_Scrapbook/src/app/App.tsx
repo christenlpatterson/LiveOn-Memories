@@ -22,6 +22,7 @@ export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading]       = useState(true);
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null);
+  const [lastViewedMilestoneId, setLastViewedMilestoneId] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showPhotoIntake, setShowPhotoIntake] = useState(false);
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
@@ -150,13 +151,21 @@ export default function App() {
           milestone={selectedMilestone}
           onBack={() => {
             if (prevMilestone) {
+              setLastViewedMilestoneId(prevMilestone.id);
               setSelectedMilestoneId(prevMilestone.id);
             } else {
+              setLastViewedMilestoneId(selectedMilestone.id);
               setSelectedMilestoneId(null);
             }
           }}
-          onNext={nextMilestone ? () => setSelectedMilestoneId(nextMilestone.id) : undefined}
-          onReturnToTimeline={() => setSelectedMilestoneId(null)}
+          onNext={nextMilestone ? () => {
+            setLastViewedMilestoneId(nextMilestone.id);
+            setSelectedMilestoneId(nextMilestone.id);
+          } : undefined}
+          onReturnToTimeline={() => {
+            setLastViewedMilestoneId(selectedMilestone.id);
+            setSelectedMilestoneId(null);
+          }}
           onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
           onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
           onAddAnnotation={(photoId, x, y, text, author) => 
@@ -213,8 +222,12 @@ export default function App() {
     <>
       <Timeline 
         milestones={milestones}
-        onMilestoneClick={setSelectedMilestoneId}
+        onMilestoneClick={(id) => {
+          setLastViewedMilestoneId(id);
+          setSelectedMilestoneId(id);
+        }}
         onDeleteMilestone={handleDeleteMilestone}
+        focusMilestoneId={lastViewedMilestoneId}
       />
 
       <div className="fixed bottom-6 right-6 flex gap-2">
