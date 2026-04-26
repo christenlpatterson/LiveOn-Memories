@@ -139,11 +139,24 @@ export default function App() {
   }
 
   if (selectedMilestone) {
+    const currentIndex = milestones.findIndex(m => m.id === selectedMilestone.id);
+    const prevMilestone = currentIndex > 0 ? milestones[currentIndex - 1] : null;
+    const nextMilestone = currentIndex >= 0 && currentIndex < milestones.length - 1
+      ? milestones[currentIndex + 1]
+      : null;
     return (
       <>
         <DetailPage 
           milestone={selectedMilestone}
-          onBack={() => setSelectedMilestoneId(null)}
+          onBack={() => {
+            if (prevMilestone) {
+              setSelectedMilestoneId(prevMilestone.id);
+            } else {
+              setSelectedMilestoneId(null);
+            }
+          }}
+          onNext={nextMilestone ? () => setSelectedMilestoneId(nextMilestone.id) : undefined}
+          onReturnToTimeline={() => setSelectedMilestoneId(null)}
           onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
           onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
           onAddAnnotation={(photoId, x, y, text, author) => 

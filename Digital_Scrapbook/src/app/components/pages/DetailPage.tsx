@@ -10,6 +10,8 @@ import { VisitorLog } from "../VisitorLog";
 interface DetailPageProps {
   milestone: Milestone;
   onBack: () => void;
+  onNext?: () => void;
+  onReturnToTimeline?: () => void;
   onAddComment: (author: string, text: string) => void;
   onDeleteComment?: (commentId: string) => void;
   onAddAnnotation?: (photoId: string, x: number, y: number, text: string, author: string) => void;
@@ -19,7 +21,7 @@ interface DetailPageProps {
   onEditMilestone?: () => void;
 }
 
-export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, onAddAnnotation, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
+export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAddComment, onDeleteComment, onAddAnnotation, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -58,34 +60,114 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
   };
 
   return (
-    <div className="min-h-screen bg-[#e8eef5] py-12 px-4">
-      <div className="max-w-4xl mx-auto relative">
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="mb-8 hover:bg-white/50 text-[#5a6c7d]"
+    <div className="min-h-screen bg-[#e8eef5] py-6 px-4">
+      {/* Gold left-pointing chevron back button, fixed to viewport, vertically centered, sitting just left of the white card */}
+      <button
+        type="button"
+        onClick={onBack}
+        aria-label="Return to timeline"
+        title="Return to timeline"
+        className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
+        style={{ left: 'max(0.25rem, calc(50% - 32rem))' }}
+      >
+        <svg
+          width="36"
+          height="64"
+          viewBox="0 0 36 64"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Return to Timeline
-        </Button>
+          <path
+            d="M30 4
+               C 33 4, 34 7, 32 9
+               L 6 30
+               C 4 31.5, 4 32.5, 6 34
+               L 32 55
+               C 34 57, 33 60, 30 60
+               C 28.5 60, 27.5 59.5, 26.5 58.5
+               L 2.5 35
+               C 0.5 33.5, 0.5 30.5, 2.5 29
+               L 26.5 5.5
+               C 27.5 4.5, 28.5 4, 30 4 Z"
+            fill="url(#backArrowGradient)"
+          />
+          <defs>
+            <linearGradient id="backArrowGradient" x1="0" y1="0" x2="36" y2="64" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#c9a961" />
+              <stop offset="100%" stopColor="#d4a743" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </button>
 
+      {/* Gold right-pointing chevron next button, mirrors the back arrow on the right edge */}
+      {onNext && (
+        <button
+          type="button"
+          onClick={onNext}
+          aria-label="Next milestone"
+          title="Next milestone"
+          className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
+          style={{ right: 'max(0.25rem, calc(50% - 32rem))' }}
+        >
+          <svg
+            width="36"
+            height="64"
+            viewBox="0 0 36 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ transform: 'scaleX(-1)' }}
+          >
+            <path
+              d="M30 4
+                 C 33 4, 34 7, 32 9
+                 L 6 30
+                 C 4 31.5, 4 32.5, 6 34
+                 L 32 55
+                 C 34 57, 33 60, 30 60
+                 C 28.5 60, 27.5 59.5, 26.5 58.5
+                 L 2.5 35
+                 C 0.5 33.5, 0.5 30.5, 2.5 29
+                 L 26.5 5.5
+                 C 27.5 4.5, 28.5 4, 30 4 Z"
+              fill="url(#nextArrowGradient)"
+            />
+            <defs>
+              <linearGradient id="nextArrowGradient" x1="0" y1="0" x2="36" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#c9a961" />
+                <stop offset="100%" stopColor="#d4a743" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </button>
+      )}
+
+      <div className="max-w-4xl mx-auto relative">
         <Card className="bg-white border-gray-200 shadow-2xl mb-8">
           <CardContent className="p-10">
             {/* Header */}
-            <div className="mb-10 text-center border-b border-gray-200 pb-8">
-              <div className="inline-block px-8 py-3 mb-6 rounded-md bg-gradient-to-r from-[#c9a961] to-[#d4a743] text-white shadow-md">
+            <div className="mb-10 border-b border-gray-200 pb-8 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={onReturnToTimeline}
+                aria-label="Return to timeline"
+                title="Return to timeline"
+                className="inline-block px-8 pt-3 pb-5 rounded-md bg-gradient-to-r from-[#c9a961] to-[#d4a743] text-white shadow-md shrink-0 hover:brightness-110 hover:shadow-lg transition-all cursor-pointer"
+              >
                 <div className="text-3xl tracking-wider" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {milestone.year}
                 </div>
+              </button>
+              <div className="min-w-0">
+                <h1 className="text-4xl mb-2 text-[#2c3e50] tracking-wide">
+                  {milestone.title}
+                </h1>
+                {milestone.description && milestone.description.trim() && (
+                  <p className="text-2xl text-[#c9a961] mt-1" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                    {milestone.description}
+                  </p>
+                )}
               </div>
-              <h1 className="text-4xl mb-2 text-[#2c3e50] tracking-wide">
-                {milestone.title}
-              </h1>
-              {milestone.description && milestone.description.trim() && (
-                <p className="text-2xl text-[#c9a961] mt-1" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                  {milestone.description}
-                </p>
-              )}
             </div>
 
             {/* Story */}
@@ -127,6 +209,39 @@ export function DetailPage({ milestone, onBack, onAddComment, onDeleteComment, o
                         />
                       </div>
                     ))}
+                  </div>
+                ) : milestone.photos.length === 5 ? (
+                  <div className="flex flex-col gap-8">
+                    {/* Row 1: 3 photos */}
+                    <div className="flex gap-8">
+                      {milestone.photos.slice(0, 3).map((photo) => (
+                        <div key={photo.id} className="flex-1 min-w-0">
+                          <AnnotatedPhoto
+                            photo={photo}
+                            onAddAnnotation={
+                              onAddAnnotation
+                                ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                                : undefined
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {/* Row 2: 2 photos */}
+                    <div className="flex gap-8">
+                      {milestone.photos.slice(3, 5).map((photo) => (
+                        <div key={photo.id} className="flex-1 min-w-0">
+                          <AnnotatedPhoto
+                            photo={photo}
+                            onAddAnnotation={
+                              onAddAnnotation
+                                ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
+                                : undefined
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="flex gap-8">
