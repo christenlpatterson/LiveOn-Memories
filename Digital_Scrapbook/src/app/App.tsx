@@ -240,6 +240,7 @@ export default function App() {
       <Toaster />
       <Butterfly opacity={0.7} tallTopWings />
       <Butterfly scale={0.65} delay={2} pathVariant={2} tallTopWings />
+      <Butterfly scale={0.52} delay={4.3} opacity={0.58} pathVariant={1} baseColor="#d8a73a" tallTopWings />
     </>
   );
 }
