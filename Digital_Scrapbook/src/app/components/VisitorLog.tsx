@@ -16,6 +16,7 @@ export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorL
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [author, setAuthor] = useState("");
   const [text, setText] = useState("");
+  const canAddComment = Boolean(onAddComment);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,7 @@ export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorL
         </div>
       </div>
 
-      {!isAddingComment && (
+      {canAddComment && !isAddingComment && (
         <div className="text-center">
           <Button 
             onClick={() => setIsAddingComment(true)}
@@ -47,7 +48,7 @@ export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorL
         </div>
       )}
 
-      {isAddingComment && (
+      {canAddComment && isAddingComment && (
         <Card className="border border-gray-200 bg-white shadow-lg">
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,7 +102,7 @@ export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorL
         {comments.length === 0 ? (
           <Card className="bg-gray-50 border-gray-200">
             <CardContent className="p-6 text-center text-gray-400 italic text-sm">
-              No entries yet. Be the first to sign the guestbook.
+              {canAddComment ? 'No entries yet. Be the first to sign the guestbook.' : 'No guestbook entries were included in this export.'}
             </CardContent>
           </Card>
         ) : (

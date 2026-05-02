@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "build:export": "node ./scripts/export-scrapbook.mjs && node --max-old-space-size=8192 ./node_modules/vite/bin/vite.js build --mode export",
     "dev": "vite",
     "preview": "vite preview"
   },
@@ -69,7 +70,8 @@
     "@vitejs/plugin-react": "4.7.0",
     "gh-pages": "^6.3.0",
     "tailwindcss": "4.1.12",
-    "vite": "6.3.5"
+    "vite": "6.3.5",
+    "vite-plugin-singlefile": "^2.3.0"
   },
   "peerDependencies": {
     "react": "18.3.1",

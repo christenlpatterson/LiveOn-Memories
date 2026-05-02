@@ -9,19 +9,23 @@ interface AnnotatedPhotoProps {
     caption?: string;
     annotations: Annotation[];
   };
+  imageClassName?: string;
+  frameClassName?: string;
 }
 
-export function AnnotatedPhoto({ photo }: AnnotatedPhotoProps) {
+export function AnnotatedPhoto({ photo, imageClassName, frameClassName }: AnnotatedPhotoProps) {
   const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
+  const resolvedFrameClassName = frameClassName ?? "mx-auto w-fit";
+  const resolvedImageClassName = imageClassName ?? "mx-auto h-auto max-h-[500px] w-auto max-w-full object-contain";
 
   return (
     <div className="space-y-4">
       <div className="relative group">
-        <div className="relative border-4 border-white shadow-xl rounded-sm overflow-hidden">
+        <div className={`relative border-4 border-white shadow-xl rounded-sm overflow-hidden ${resolvedFrameClassName}`.trim()}>
           <img
             src={photo.url}
             alt={photo.caption || ""}
-            className="w-full"
+            className={resolvedImageClassName}
           />
 
           {photo.annotations.map((annotation) => (
@@ -77,7 +81,7 @@ export function AnnotatedPhoto({ photo }: AnnotatedPhotoProps) {
       </div>
 
       {photo.caption && (
-        <p className="text-center text-[#6b7c8d] text-sm">{photo.caption}</p>
+        <p className="text-center text-[#6b7c8d] text-lg leading-relaxed">{photo.caption}</p>
       )}
     </div>
   );

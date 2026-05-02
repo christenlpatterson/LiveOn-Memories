@@ -14,6 +14,8 @@ backend/scrapbook.db
 # Node
 Digital_Scrapbook/node_modules/
 Digital_Scrapbook/dist/
+Digital_Scrapbook/src/app/data/embeddedScrapbook.ts
+Digital_Scrapbook/src/app/data/embeddedScrapbook.generated.ts
 
 # macOS
 .DS_Store

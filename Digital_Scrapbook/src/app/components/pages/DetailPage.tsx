@@ -9,10 +9,12 @@ import { VisitorLog } from "../VisitorLog";
 
 interface DetailPageProps {
   milestone: Milestone;
+  milestones: Milestone[];
   onBack: () => void;
   onNext?: () => void;
   onReturnToTimeline?: () => void;
-  onAddComment: (author: string, text: string) => void;
+  onSelectMilestone?: (milestoneId: string | null) => void;
+  onAddComment?: (author: string, text: string) => void;
   onDeleteComment?: (commentId: string) => void;
   onDeleteMilestone?: () => void;
   onAddAudioClip?: (blob: Blob) => void;
@@ -20,7 +22,7 @@ interface DetailPageProps {
   onEditMilestone?: () => void;
 }
 
-export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAddComment, onDeleteComment, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
+export function DetailPage({ milestone, milestones, onBack, onNext, onReturnToTimeline, onSelectMilestone, onAddComment, onDeleteComment, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -58,6 +60,15 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
     setIsRecording(false);
   };
 
+  const handleSelectMilestone = (milestoneId: string | null) => {
+    if (milestoneId === null) {
+      onReturnToTimeline?.();
+      return;
+    }
+
+    onSelectMilestone?.(milestoneId);
+  };
+
   return (
     <div className="min-h-screen bg-[#e8eef5] py-6 px-4">
       {/* Gold left-pointing chevron back button, fixed to viewport, vertically centered, sitting just left of the white card */}
@@ -67,7 +78,7 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
         aria-label="Return to timeline"
         title="Return to timeline"
         className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
-        style={{ left: 'max(0.25rem, calc(50% - 32rem))' }}
+        style={{ left: '0.75rem' }}
       >
         <svg
           width="36"
@@ -107,7 +118,7 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
           aria-label="Next milestone"
           title="Next milestone"
           className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
-          style={{ right: 'max(0.25rem, calc(50% - 32rem))' }}
+          style={{ right: '0.75rem' }}
         >
           <svg
             width="36"
@@ -141,11 +152,11 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
         </button>
       )}
 
-      <div className="max-w-4xl mx-auto relative">
+      <div className="mx-auto w-full max-w-[96rem] relative">
         <Card className="bg-white border-gray-200 shadow-2xl mb-8">
           <CardContent className="p-10">
             {/* Header */}
-            <div className="mb-10 border-b border-gray-200 pb-8 flex items-center gap-6">
+            <div className="mb-4 pb-3 flex items-center gap-6">
               <button
                 type="button"
                 onClick={onReturnToTimeline}
@@ -169,6 +180,64 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
               </div>
             </div>
 
+            <div className="mb-10 px-2 pb-1">
+              <div
+                className="relative mx-auto grid w-full items-center px-1"
+                style={{
+                  gridTemplateColumns: `repeat(${milestones.length + 1}, minmax(0, 1fr))`,
+                  columnGap: 'clamp(0.2rem, 0.8vw, 1rem)',
+                }}
+              >
+                <div className="pointer-events-none absolute left-1 right-1 top-1/2 h-[2px] -translate-y-1/2 bg-[#d4a743]" />
+                <button
+                  type="button"
+                  onClick={() => handleSelectMilestone(null)}
+                  aria-label="Return to homepage"
+                  title="Return to homepage"
+                  className="relative z-10 mx-auto flex items-center justify-center rounded-full border border-[#d4a743]/60 bg-[#fffaf0] transition-transform hover:scale-110"
+                  style={{
+                    width: 'clamp(1.25rem, 2.8vw, 1.75rem)',
+                    height: 'clamp(1.25rem, 2.8vw, 1.75rem)',
+                  }}
+                >
+                  <span
+                    className="block rounded-full border-2 border-[#d4a743] bg-[#fff7df]"
+                    style={{
+                      width: 'clamp(0.7rem, 1.8vw, 1rem)',
+                      height: 'clamp(0.7rem, 1.8vw, 1rem)',
+                    }}
+                  />
+                </button>
+                {milestones.map((item) => {
+                  const isCurrent = item.id === milestone.id;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleSelectMilestone(item.id)}
+                      aria-label={`Open ${item.title}`}
+                      title={`${item.year} - ${item.title}`}
+                      className="relative z-10 mx-auto rounded-full transition-transform hover:scale-110"
+                    >
+                      <span
+                        className={`block rounded-full border-2 border-[#d4a743] ${isCurrent ? 'bg-[#d4a743] shadow-[0_0_0_4px_rgba(212,167,67,0.18)]' : 'bg-[#fffdf6]'}`}
+                        style={isCurrent
+                          ? {
+                              width: 'clamp(0.9rem, 2.2vw, 1.25rem)',
+                              height: 'clamp(0.9rem, 2.2vw, 1.25rem)',
+                            }
+                          : {
+                              width: 'clamp(0.7rem, 1.8vw, 1rem)',
+                              height: 'clamp(0.7rem, 1.8vw, 1rem)',
+                            }}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Story */}
             {milestone.story && milestone.story.trim() && (
               <div className="mb-10">
@@ -184,15 +253,17 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
             {milestone.photos && milestone.photos.length > 0 && (
               <div className="mb-10">
                 {milestone.photos.length === 1 ? (
-                  <div className="w-[70%] mx-auto">
+                  <div className="w-[85%] mx-auto">
                     <AnnotatedPhoto
                       photo={milestone.photos[0]}
+                      frameClassName="mx-auto w-fit"
+                      imageClassName="mx-auto h-auto max-h-[500px] w-auto max-w-full object-contain"
                     />
                   </div>
                 ) : milestone.photos.length === 2 ? (
-                  <div className="flex gap-8">
+                  <div className="flex flex-col gap-8 md:flex-row">
                     {milestone.photos.map((photo) => (
-                      <div key={photo.id} className="flex-1">
+                      <div key={photo.id} className="min-w-0 md:flex-1">
                         <AnnotatedPhoto
                           photo={photo}
                         />
@@ -202,9 +273,9 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                 ) : milestone.photos.length === 5 ? (
                   <div className="flex flex-col gap-8">
                     {/* Row 1: 3 photos */}
-                    <div className="flex gap-8">
+                    <div className="flex flex-col gap-8 md:flex-row">
                       {milestone.photos.slice(0, 3).map((photo) => (
-                        <div key={photo.id} className="flex-1 min-w-0">
+                        <div key={photo.id} className="min-w-0 md:flex-1">
                           <AnnotatedPhoto
                             photo={photo}
                           />
@@ -212,9 +283,9 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                       ))}
                     </div>
                     {/* Row 2: 2 photos */}
-                    <div className="flex gap-8">
+                    <div className="flex flex-col gap-8 md:flex-row">
                       {milestone.photos.slice(3, 5).map((photo) => (
-                        <div key={photo.id} className="flex-1 min-w-0">
+                        <div key={photo.id} className="min-w-0 md:flex-1">
                           <AnnotatedPhoto
                             photo={photo}
                           />
@@ -223,9 +294,9 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                     </div>
                   </div>
                 ) : (
-                  <div className="flex gap-8">
+                  <div className="flex flex-col gap-8 md:flex-row">
                     {/* Left column: photos 1 & 2 stacked */}
-                    <div className="flex flex-col gap-8 flex-1">
+                    <div className="flex flex-col gap-8 md:flex-1">
                       {milestone.photos.slice(0, 2).map((photo) => (
                         <AnnotatedPhoto
                           key={photo.id}
@@ -234,7 +305,7 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                       ))}
                     </div>
                     {/* Right column: photos 3 & 4 */}
-                    <div className="flex flex-col gap-8 flex-1">
+                    <div className="flex flex-col gap-8 md:flex-1">
                       {milestone.photos.slice(2, 4).map((photo) => (
                         <AnnotatedPhoto
                           key={photo.id}

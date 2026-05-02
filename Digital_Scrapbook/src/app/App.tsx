@@ -16,14 +16,17 @@ import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { Button } from './components/ui/button';
 import { Butterfly } from './components/Butterfly';
+import { getEmbeddedMilestones } from './data/embeddedScrapbookLoader';
 
 const PASSCODE = 'Patterson';
 const PASSCODE_STORAGE_KEY = 'liveon-memories-passcode-ok';
 const EDIT_MODE_ENABLED = import.meta.env.VITE_EDIT_MODE === 'Yes';
+const OFFLINE_EXPORT_ENABLED = import.meta.env.VITE_OFFLINE_EXPORT === 'true';
 
 export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (OFFLINE_EXPORT_ENABLED) return true;
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(PASSCODE_STORAGE_KEY) === 'true';
   });
@@ -40,11 +43,16 @@ export default function App() {
     if (!isUnlocked) return;
 
     setLoading(true);
-    getMilestones()
+    const loadMilestones = OFFLINE_EXPORT_ENABLED ? getEmbeddedMilestones : getMilestones;
+
+    loadMilestones()
       .then(setMilestones)
       .catch(() => toast.error('Could not reach the server. Is the Flask backend running?'))
       .finally(() => setLoading(false));
   }, [isUnlocked]);
+
+  const canEdit = EDIT_MODE_ENABLED && !OFFLINE_EXPORT_ENABLED;
+  const canComment = !OFFLINE_EXPORT_ENABLED;
 
   const selectedMilestone = selectedMilestoneId
     ? milestones.find(m => m.id === selectedMilestoneId)
@@ -190,7 +198,7 @@ export default function App() {
     toast.success('Page updated.');
   };
 
-  if (editingMilestone) {
+  if (editingMilestone && canEdit) {
     return (
       <>
         <ScrapbookEditor
@@ -214,6 +222,7 @@ export default function App() {
       <>
         <DetailPage 
           milestone={selectedMilestone}
+          milestones={milestones}
           onBack={() => {
             if (prevMilestone) {
               setLastViewedMilestoneId(prevMilestone.id);
@@ -231,19 +240,29 @@ export default function App() {
             setLastViewedMilestoneId(selectedMilestone.id);
             setSelectedMilestoneId(null);
           }}
-          onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
-          onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
-          onDeleteMilestone={EDIT_MODE_ENABLED ? () => handleDeleteMilestone(selectedMilestone.id) : undefined}
-          onAddAudioClip={EDIT_MODE_ENABLED ? (blob) => handleAddAudioClip(selectedMilestone.id, blob) : undefined}
-          onDeleteAudioClip={EDIT_MODE_ENABLED ? (clipId) => handleDeleteAudioClip(selectedMilestone.id, clipId) : undefined}
-          onEditMilestone={EDIT_MODE_ENABLED ? () => setEditingMilestoneId(selectedMilestone.id) : undefined}
+          onSelectMilestone={(milestoneId) => {
+            if (milestoneId === null) {
+              setLastViewedMilestoneId(selectedMilestone.id);
+              setSelectedMilestoneId(null);
+              return;
+            }
+
+            setLastViewedMilestoneId(milestoneId);
+            setSelectedMilestoneId(milestoneId);
+          }}
+          onAddComment={canComment ? (author, text) => handleAddComment(selectedMilestone.id, author, text) : undefined}
+          onDeleteComment={canEdit ? (commentId) => handleDeleteComment(selectedMilestone.id, commentId) : undefined}
+          onDeleteMilestone={canEdit ? () => handleDeleteMilestone(selectedMilestone.id) : undefined}
+          onAddAudioClip={canEdit ? (blob) => handleAddAudioClip(selectedMilestone.id, blob) : undefined}
+          onDeleteAudioClip={canEdit ? (clipId) => handleDeleteAudioClip(selectedMilestone.id, clipId) : undefined}
+          onEditMilestone={canEdit ? () => setEditingMilestoneId(selectedMilestone.id) : undefined}
         />
         <Toaster />
       </>
     );
   }
 
-  if (showEditor) {
+  if (showEditor && canEdit) {
     return (
       <>
         <ScrapbookEditor
@@ -288,11 +307,11 @@ export default function App() {
           setLastViewedMilestoneId(id);
           setSelectedMilestoneId(id);
         }}
-        onDeleteMilestone={handleDeleteMilestone}
+        onDeleteMilestone={canEdit ? handleDeleteMilestone : undefined}
         focusMilestoneId={lastViewedMilestoneId}
       />
 
-      {EDIT_MODE_ENABLED ? (
+      {canEdit ? (
         <div className="fixed bottom-6 right-6 flex gap-2">
           <Button variant="outline" onClick={() => setShowPhotoIntake(true)}>
             Photo Intake
