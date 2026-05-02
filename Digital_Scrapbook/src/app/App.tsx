@@ -8,7 +8,6 @@ import {
   getMilestones,
   addComment,
   deleteComment,
-  addAnnotation,
   deleteMilestone,
   uploadAudio,
   deleteAudioClip,
@@ -18,9 +17,18 @@ import { toast } from 'sonner';
 import { Button } from './components/ui/button';
 import { Butterfly } from './components/Butterfly';
 
+const PASSCODE = 'Patterson';
+const PASSCODE_STORAGE_KEY = 'liveon-memories-passcode-ok';
+
 export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(PASSCODE_STORAGE_KEY) === 'true';
+  });
+  const [passcode, setPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState(false);
+  const [loading, setLoading]       = useState(isUnlocked);
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null);
   const [lastViewedMilestoneId, setLastViewedMilestoneId] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -28,11 +36,14 @@ export default function App() {
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isUnlocked) return;
+
+    setLoading(true);
     getMilestones()
       .then(setMilestones)
       .catch(() => toast.error('Could not reach the server. Is the Flask backend running?'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [isUnlocked]);
 
   const selectedMilestone = selectedMilestoneId
     ? milestones.find(m => m.id === selectedMilestoneId)
@@ -56,25 +67,6 @@ export default function App() {
       ));
       toast.success('Entry deleted.');
     } catch { toast.error('Failed to delete entry.'); }
-  };
-
-  const handleAddAnnotation = async (
-    milestoneId: string, photoId: string,
-    x: number, y: number, text: string, author: string,
-  ) => {
-    try {
-      const annotation = await addAnnotation(milestoneId, photoId, x, y, text, author);
-      setMilestones(prev => prev.map(m => {
-        if (m.id !== milestoneId) return m;
-        return {
-          ...m,
-          photos: (m.photos ?? []).map(p =>
-            p.id === photoId ? { ...p, annotations: [...p.annotations, annotation] } : p
-          ),
-        };
-      }));
-      toast.success('Annotation added!');
-    } catch { toast.error('Failed to save annotation.'); }
   };
 
   const handleDeleteMilestone = async (milestoneId: string) => {
@@ -106,6 +98,78 @@ export default function App() {
       ));
     } catch { toast.error('Failed to delete recording.'); }
   };
+
+  const handleUnlock = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (passcode.trim() !== PASSCODE) {
+      setPasscodeError(true);
+      return;
+    }
+
+    window.localStorage.setItem(PASSCODE_STORAGE_KEY, 'true');
+    setPasscode('');
+    setPasscodeError(false);
+    setIsUnlocked(true);
+  };
+
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(234,214,178,0.9),_rgba(245,239,229,0.97)_38%,_rgba(221,226,230,1)_100%)] px-6 py-10 text-[#2f3b33]">
+        <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl items-center justify-center">
+          <div className="grid w-full overflow-hidden rounded-[2rem] border border-[#ceb98e] bg-[#f8f2e7]/95 shadow-[0_25px_80px_rgba(79,62,34,0.18)] md:grid-cols-[1.1fr_0.9fr]">
+            <div className="hidden border-r border-[#d8c6a2] bg-[linear-gradient(180deg,rgba(113,87,46,0.18),rgba(113,87,46,0.03))] p-10 md:block">
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-[#8a6d3b]">LiveOn Memories</p>
+                  <h1 className="mt-6 max-w-sm text-5xl leading-[1.02] text-[#4a3520]">Family stories, tucked behind a simple gate.</h1>
+                  <p className="mt-6 max-w-md text-base leading-7 text-[#5f5444]">
+                    Enter the family passcode to open the scrapbook timeline, photos, stories, and recordings.
+                  </p>
+                </div>
+                <div className="rounded-[1.5rem] border border-[#d8c6a2] bg-[#fff9f0]/75 p-5 text-sm leading-6 text-[#6a5b44]">
+                  This is a client-side passcode screen meant to keep casual visitors out of the site.
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 sm:p-10 md:p-12">
+              <p className="text-xs uppercase tracking-[0.32em] text-[#8a6d3b] md:hidden">LiveOn Memories</p>
+              <h2 className="mt-4 text-3xl text-[#4a3520] sm:text-4xl">Enter passcode</h2>
+              <p className="mt-4 max-w-md text-sm leading-7 text-[#675a47]">
+                This scrapbook is private. Enter the passcode to continue.
+              </p>
+
+              <form className="mt-10 space-y-4" onSubmit={handleUnlock}>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-[#5f4a2e]">Passcode</span>
+                  <input
+                    type="password"
+                    value={passcode}
+                    onChange={(event) => {
+                      setPasscode(event.target.value);
+                      if (passcodeError) setPasscodeError(false);
+                    }}
+                    className="w-full rounded-2xl border border-[#ccb68b] bg-white px-5 py-4 text-base text-[#2f3b33] outline-none transition focus:border-[#8a6d3b] focus:ring-4 focus:ring-[#d8c6a2]/50"
+                    autoComplete="current-password"
+                    autoFocus
+                  />
+                </label>
+
+                {passcodeError ? (
+                  <p className="text-sm text-[#9a3a2a]">That passcode did not match.</p>
+                ) : null}
+
+                <Button type="submit" className="w-full rounded-2xl bg-[#7e5d31] py-6 text-base hover:bg-[#6d4f29]">
+                  Open scrapbook
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
