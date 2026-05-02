@@ -278,13 +278,6 @@ def add_annotation(mid, pid):
     return jsonify(a.to_dict()), 201
 
 
-@app.delete("/api/admin/annotations/all")
-def delete_all_annotations():
-    count = db.session.query(Annotation).delete()
-    db.session.commit()
-    return jsonify({"deleted": count}), 200
-
-
 # ── Comment routes ─────────────────────────────────────────────────────────────
 
 @app.post("/api/milestones/<string:mid>/comments")
