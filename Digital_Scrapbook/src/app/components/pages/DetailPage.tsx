@@ -310,7 +310,7 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
         <div className="mt-6">
           <Button
             variant="ghost"
-            onClick={onBack}
+            onClick={onReturnToTimeline ?? onBack}
             className="hover:bg-white/50 text-[#5a6c7d]"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
