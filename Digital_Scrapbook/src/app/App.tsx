@@ -168,9 +168,6 @@ export default function App() {
           }}
           onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
           onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
-          onAddAnnotation={(photoId, x, y, text, author) => 
-            handleAddAnnotation(selectedMilestone.id, photoId, x, y, text, author)
-          }
           onDeleteMilestone={() => handleDeleteMilestone(selectedMilestone.id)}
           onAddAudioClip={(blob) => handleAddAudioClip(selectedMilestone.id, blob)}
           onDeleteAudioClip={(clipId) => handleDeleteAudioClip(selectedMilestone.id, clipId)}

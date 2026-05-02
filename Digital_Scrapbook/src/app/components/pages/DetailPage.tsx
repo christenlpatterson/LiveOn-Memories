@@ -14,14 +14,13 @@ interface DetailPageProps {
   onReturnToTimeline?: () => void;
   onAddComment: (author: string, text: string) => void;
   onDeleteComment?: (commentId: string) => void;
-  onAddAnnotation?: (photoId: string, x: number, y: number, text: string, author: string) => void;
   onDeleteMilestone?: () => void;
   onAddAudioClip?: (blob: Blob) => void;
   onDeleteAudioClip?: (clipId: string) => void;
   onEditMilestone?: () => void;
 }
 
-export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAddComment, onDeleteComment, onAddAnnotation, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
+export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAddComment, onDeleteComment, onDeleteMilestone, onAddAudioClip, onDeleteAudioClip, onEditMilestone }: DetailPageProps) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -188,11 +187,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                   <div className="w-[70%] mx-auto">
                     <AnnotatedPhoto
                       photo={milestone.photos[0]}
-                      onAddAnnotation={
-                        onAddAnnotation
-                          ? (x, y, text, author) => onAddAnnotation(milestone.photos[0].id, x, y, text, author)
-                          : undefined
-                      }
                     />
                   </div>
                 ) : milestone.photos.length === 2 ? (
@@ -201,11 +195,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                       <div key={photo.id} className="flex-1">
                         <AnnotatedPhoto
                           photo={photo}
-                          onAddAnnotation={
-                            onAddAnnotation
-                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                              : undefined
-                          }
                         />
                       </div>
                     ))}
@@ -218,11 +207,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                         <div key={photo.id} className="flex-1 min-w-0">
                           <AnnotatedPhoto
                             photo={photo}
-                            onAddAnnotation={
-                              onAddAnnotation
-                                ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                                : undefined
-                            }
                           />
                         </div>
                       ))}
@@ -233,11 +217,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                         <div key={photo.id} className="flex-1 min-w-0">
                           <AnnotatedPhoto
                             photo={photo}
-                            onAddAnnotation={
-                              onAddAnnotation
-                                ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                                : undefined
-                            }
                           />
                         </div>
                       ))}
@@ -251,11 +230,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                         <AnnotatedPhoto
                           key={photo.id}
                           photo={photo}
-                          onAddAnnotation={
-                            onAddAnnotation
-                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                              : undefined
-                          }
                         />
                       ))}
                     </div>
@@ -265,11 +239,6 @@ export function DetailPage({ milestone, onBack, onNext, onReturnToTimeline, onAd
                         <AnnotatedPhoto
                           key={photo.id}
                           photo={photo}
-                          onAddAnnotation={
-                            onAddAnnotation
-                              ? (x, y, text, author) => onAddAnnotation(photo.id, x, y, text, author)
-                              : undefined
-                          }
                         />
                       ))}
                     </div>
