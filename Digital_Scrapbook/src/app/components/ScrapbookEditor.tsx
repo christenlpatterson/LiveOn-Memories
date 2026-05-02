@@ -165,12 +165,12 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
                       <div key={p.id} className="border rounded p-2 relative bg-gray-50">
                         <img src={p.url} alt={p.caption || ''} className="w-full h-40 object-cover rounded" />
                         <button type="button" onClick={() => queueDeleteExisting(p.id)} className="absolute top-2 right-2 bg-white border rounded px-2 py-1 text-xs">Remove</button>
-                        <input
-                          type="text"
-                          placeholder="Annotation (optional)"
+                        <textarea
+                          placeholder="Photo caption (optional)"
                           value={p.caption ?? ''}
                           onChange={(e) => updateExistingCaption(p.id, e.target.value)}
-                          className="mt-2 w-full border rounded px-2 py-1 text-xs"
+                          className="mt-2 w-full border rounded px-3 py-2 text-sm resize-none"
+                          rows={4}
                         />
                       </div>
                     ))}
@@ -207,12 +207,12 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
                           <audio src={p.previewUrl} controls className="w-full" />
                         )}
                         <button type="button" onClick={() => removePreview(p.id)} className="absolute top-2 right-2 bg-white border rounded px-2 py-1 text-xs">Remove</button>
-                        <input
-                          type="text"
-                          placeholder="Annotation (optional)"
+                        <textarea
+                          placeholder="Photo caption (optional)"
                           value={p.caption}
                           onChange={(e) => updateCaption(p.id, e.target.value)}
-                          className="mt-2 w-full border rounded px-2 py-1 text-xs"
+                          className="mt-2 w-full border rounded px-3 py-2 text-sm resize-none"
+                          rows={4}
                         />
                       </div>
                     ))}

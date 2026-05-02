@@ -82,7 +82,7 @@ export function AnnotatedPhoto({ photo, onAddAnnotation }: AnnotatedPhotoProps) 
               {/* Annotation popup */}
               {selectedAnnotation === annotation.id && (
                 <div
-                  className="absolute z-10 bg-white border border-gray-200 shadow-2xl p-4 max-w-xs rounded-md"
+                  className="absolute z-10 bg-white border border-gray-200 shadow-2xl p-6 max-w-2xl rounded-md"
                   style={{
                     left: `${annotation.x}%`,
                     top: `${annotation.y}%`,
@@ -95,12 +95,12 @@ export function AnnotatedPhoto({ photo, onAddAnnotation }: AnnotatedPhotoProps) 
                       e.stopPropagation();
                       setSelectedAnnotation(null);
                     }}
-                    className="absolute top-2 right-2 text-[#6b7c8d] hover:text-[#2c3e50]"
+                    className="absolute top-3 right-3 text-[#6b7c8d] hover:text-[#2c3e50]"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </button>
-                  <p className="text-sm text-[#2c3e50] mb-2">{annotation.text}</p>
-                  <div className="text-xs text-[#6b7c8d]">
+                  <p className="text-base text-[#2c3e50] mb-3 whitespace-pre-wrap">{annotation.text}</p>
+                  <div className="text-sm text-[#6b7c8d]">
                     <div>— {annotation.author}</div>
                     <div>{annotation.date}</div>
                   </div>
@@ -127,18 +127,18 @@ export function AnnotatedPhoto({ photo, onAddAnnotation }: AnnotatedPhotoProps) 
 
       {/* Inline annotation form (no popup) */}
       {pending && (
-        <div className="border border-gray-200 rounded-md bg-white p-3 space-y-2 shadow-sm">
-          <input
-            type="text"
+        <div className="border border-gray-200 rounded-md bg-white p-4 space-y-3 shadow-sm">
+          <textarea
             autoFocus
             placeholder="Annotation"
             value={pendingText}
             onChange={(e) => setPendingText(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') { e.preventDefault(); savePending(); }
+              if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); savePending(); }
               if (e.key === 'Escape') { e.preventDefault(); cancelPending(); }
             }}
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded px-3 py-2 text-base resize-none"
+            rows={5}
           />
           <input
             type="text"
@@ -149,7 +149,7 @@ export function AnnotatedPhoto({ photo, onAddAnnotation }: AnnotatedPhotoProps) 
               if (e.key === 'Enter') { e.preventDefault(); savePending(); }
               if (e.key === 'Escape') { e.preventDefault(); cancelPending(); }
             }}
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded px-3 py-2 text-base"
           />
           <div className="flex gap-2">
             <Button type="button" size="sm" onClick={savePending} disabled={!pendingText.trim()}>
