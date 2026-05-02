@@ -19,6 +19,7 @@ import { Butterfly } from './components/Butterfly';
 
 const PASSCODE = 'Patterson';
 const PASSCODE_STORAGE_KEY = 'liveon-memories-passcode-ok';
+const EDIT_MODE_ENABLED = import.meta.env.VITE_EDIT_MODE === 'Yes';
 
 export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
@@ -232,10 +233,10 @@ export default function App() {
           }}
           onAddComment={(author, text) => handleAddComment(selectedMilestone.id, author, text)}
           onDeleteComment={(commentId) => handleDeleteComment(selectedMilestone.id, commentId)}
-          onDeleteMilestone={() => handleDeleteMilestone(selectedMilestone.id)}
-          onAddAudioClip={(blob) => handleAddAudioClip(selectedMilestone.id, blob)}
-          onDeleteAudioClip={(clipId) => handleDeleteAudioClip(selectedMilestone.id, clipId)}
-          onEditMilestone={() => setEditingMilestoneId(selectedMilestone.id)}
+          onDeleteMilestone={EDIT_MODE_ENABLED ? () => handleDeleteMilestone(selectedMilestone.id) : undefined}
+          onAddAudioClip={EDIT_MODE_ENABLED ? (blob) => handleAddAudioClip(selectedMilestone.id, blob) : undefined}
+          onDeleteAudioClip={EDIT_MODE_ENABLED ? (clipId) => handleDeleteAudioClip(selectedMilestone.id, clipId) : undefined}
+          onEditMilestone={EDIT_MODE_ENABLED ? () => setEditingMilestoneId(selectedMilestone.id) : undefined}
         />
         <Toaster />
       </>
@@ -291,12 +292,14 @@ export default function App() {
         focusMilestoneId={lastViewedMilestoneId}
       />
 
-      <div className="fixed bottom-6 right-6 flex gap-2">
-        <Button variant="outline" onClick={() => setShowPhotoIntake(true)}>
-          Photo Intake
-        </Button>
-        <Button onClick={() => setShowEditor(true)}>Add Entry</Button>
-      </div>
+      {EDIT_MODE_ENABLED ? (
+        <div className="fixed bottom-6 right-6 flex gap-2">
+          <Button variant="outline" onClick={() => setShowPhotoIntake(true)}>
+            Photo Intake
+          </Button>
+          <Button onClick={() => setShowEditor(true)}>Add Entry</Button>
+        </div>
+      ) : null}
 
       <Toaster />
       <Butterfly opacity={0.7} tallTopWings />
