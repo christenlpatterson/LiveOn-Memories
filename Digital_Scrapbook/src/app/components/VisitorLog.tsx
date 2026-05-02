@@ -100,7 +100,7 @@ export function VisitorLog({ comments, onAddComment, onDeleteComment }: VisitorL
       <div className="space-y-4 mt-8">
         {comments.length === 0 ? (
           <Card className="bg-gray-50 border-gray-200">
-            <CardContent className="p-6 text-center text-[#6b7c8d]">
+            <CardContent className="p-6 text-center text-gray-400 italic text-sm">
               No entries yet. Be the first to sign the guestbook.
             </CardContent>
           </Card>

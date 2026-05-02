@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Milestone, Photo } from '../data/types';
-import { createMilestone, updateMilestone, uploadPhoto, deletePhoto } from '../api';
+import { createMilestone, updateMilestone, uploadPhoto, deletePhoto, updatePhoto } from '../api';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function extractMonth(date?: string): string {
@@ -55,6 +55,10 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
     setExistingPhotos(prev => prev.filter(p => p.id !== photoId));
   };
 
+  const updateExistingCaption = (photoId: string, caption: string) => {
+    setExistingPhotos(prev => prev.map(p => p.id === photoId ? { ...p, caption } : p));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -73,11 +77,21 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
           story: story || '',
         });
         await Promise.all(photosToDelete.map(pid => deletePhoto(editMilestone.id, pid).catch(() => {})));
+        const originalById = new Map((editMilestone.photos ?? []).map(p => [p.id, p]));
+        const updatedExisting = await Promise.all(
+          existingPhotos.map(async (p) => {
+            const original = originalById.get(p.id);
+            if (original && (original.caption ?? '') !== (p.caption ?? '')) {
+              return await updatePhoto(editMilestone.id, p.id, { caption: p.caption ?? '' });
+            }
+            return p;
+          })
+        );
         const uploadedPhotos = await Promise.all(
           previews.map((pr) => uploadPhoto(editMilestone.id, pr.file, pr.caption))
         );
         previews.forEach((pr) => URL.revokeObjectURL(pr.previewUrl));
-        onUpdate?.({ ...milestone, photos: [...existingPhotos, ...uploadedPhotos] });
+        onUpdate?.({ ...milestone, photos: [...updatedExisting, ...uploadedPhotos] });
       } else {
         const milestone = await createMilestone({
           year: entryYear,
@@ -151,7 +165,13 @@ export function ScrapbookEditor({ onCreate, onClose, editMilestone, onUpdate }: 
                       <div key={p.id} className="border rounded p-2 relative bg-gray-50">
                         <img src={p.url} alt={p.caption || ''} className="w-full h-40 object-cover rounded" />
                         <button type="button" onClick={() => queueDeleteExisting(p.id)} className="absolute top-2 right-2 bg-white border rounded px-2 py-1 text-xs">Remove</button>
-                        {p.caption && <div className="mt-2 text-xs text-gray-600">{p.caption}</div>}
+                        <input
+                          type="text"
+                          placeholder="Annotation (optional)"
+                          value={p.caption ?? ''}
+                          onChange={(e) => updateExistingCaption(p.id, e.target.value)}
+                          className="mt-2 w-full border rounded px-2 py-1 text-xs"
+                        />
                       </div>
                     ))}
                   </div>

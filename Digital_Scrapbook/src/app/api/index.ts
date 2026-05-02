@@ -77,6 +77,14 @@ export function deletePhoto(milestoneId: string, photoId: string): Promise<void>
   return req(`/api/milestones/${milestoneId}/photos/${photoId}`, { method: 'DELETE' });
 }
 
+export function updatePhoto(milestoneId: string, photoId: string, data: { caption?: string }): Promise<Photo> {
+  return req(`/api/milestones/${milestoneId}/photos/${photoId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+}
+
 // ── Annotations ───────────────────────────────────────────────────────────────
 
 export function addAnnotation(

@@ -250,6 +250,15 @@ def delete_photo(mid, pid):
     db.session.commit()
     return "", 204
 
+@app.patch("/api/milestones/<string:mid>/photos/<string:pid>")
+def update_photo(mid, pid):
+    photo = db.get_or_404(Photo, pid)
+    data = request.get_json(silent=True) or {}
+    if "caption" in data:
+        photo.caption = data["caption"] or ""
+    db.session.commit()
+    return jsonify(photo.to_dict())
+
 
 # ── Annotation routes ──────────────────────────────────────────────────────────
 
