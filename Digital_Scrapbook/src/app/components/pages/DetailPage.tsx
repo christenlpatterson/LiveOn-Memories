@@ -6,6 +6,8 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Card, CardContent } from "../ui/card";
 import { AnnotatedPhoto } from "../AnnotatedPhoto";
 import { VisitorLog } from "../VisitorLog";
+import detailArrowLeft from "../../../assets/images/detail-arrow-left.svg";
+import detailArrowRight from "../../../assets/images/detail-arrow-right.svg";
 
 interface DetailPageProps {
   milestone: Milestone;
@@ -71,46 +73,17 @@ export function DetailPage({ milestone, milestones, onBack, onNext, onReturnToTi
 
   return (
     <div className="min-h-screen bg-[#e8eef5] py-6 px-4">
-      {/* Gold left-pointing chevron back button, fixed to viewport, vertically centered, sitting just left of the white card */}
       <button
         type="button"
         onClick={onBack}
         aria-label="Return to timeline"
         title="Return to timeline"
         className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
-        style={{ left: '0.75rem' }}
+        style={{ left: '1.75rem' }}
       >
-        <svg
-          width="36"
-          height="64"
-          viewBox="0 0 36 64"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M30 4
-               C 33 4, 34 7, 32 9
-               L 6 30
-               C 4 31.5, 4 32.5, 6 34
-               L 32 55
-               C 34 57, 33 60, 30 60
-               C 28.5 60, 27.5 59.5, 26.5 58.5
-               L 2.5 35
-               C 0.5 33.5, 0.5 30.5, 2.5 29
-               L 26.5 5.5
-               C 27.5 4.5, 28.5 4, 30 4 Z"
-            fill="url(#backArrowGradient)"
-          />
-          <defs>
-            <linearGradient id="backArrowGradient" x1="0" y1="0" x2="36" y2="64" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#c9a961" />
-              <stop offset="100%" stopColor="#d4a743" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <img src={detailArrowLeft} alt="" aria-hidden="true" className="block h-[34px] w-auto" />
       </button>
 
-      {/* Gold right-pointing chevron next button, mirrors the back arrow on the right edge */}
       {onNext && (
         <button
           type="button"
@@ -118,37 +91,9 @@ export function DetailPage({ milestone, milestones, onBack, onNext, onReturnToTi
           aria-label="Next milestone"
           title="Next milestone"
           className="fixed z-50 top-1/2 -translate-y-1/2 hover:brightness-110 hover:scale-105 transition-transform drop-shadow-lg"
-          style={{ right: '0.75rem' }}
+          style={{ right: '1.75rem' }}
         >
-          <svg
-            width="36"
-            height="64"
-            viewBox="0 0 36 64"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ transform: 'scaleX(-1)' }}
-          >
-            <path
-              d="M30 4
-                 C 33 4, 34 7, 32 9
-                 L 6 30
-                 C 4 31.5, 4 32.5, 6 34
-                 L 32 55
-                 C 34 57, 33 60, 30 60
-                 C 28.5 60, 27.5 59.5, 26.5 58.5
-                 L 2.5 35
-                 C 0.5 33.5, 0.5 30.5, 2.5 29
-                 L 26.5 5.5
-                 C 27.5 4.5, 28.5 4, 30 4 Z"
-              fill="url(#nextArrowGradient)"
-            />
-            <defs>
-              <linearGradient id="nextArrowGradient" x1="0" y1="0" x2="36" y2="64" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#c9a961" />
-                <stop offset="100%" stopColor="#d4a743" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <img src={detailArrowRight} alt="" aria-hidden="true" className="block h-[34px] w-auto" />
         </button>
       )}
 
