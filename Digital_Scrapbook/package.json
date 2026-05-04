@@ -7,6 +7,7 @@
     "build": "vite build",
     "build:export": "node ./scripts/export-scrapbook.mjs && node --max-old-space-size=8192 ./node_modules/vite/bin/vite.js build --mode export",
     "dev": "vite",
+    "deploy:pages": "npm run build && gh-pages -d dist",
     "preview": "vite preview"
   },
   "dependencies": {

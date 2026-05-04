@@ -82,6 +82,30 @@ This starts both servers:
 
 Press **Ctrl+C** to stop both servers.
 
+## Deploying
+
+### GitHub Pages deploy
+
+GitHub Pages should publish the normal Vite build, not the offline single-file export.
+
+```bash
+cd Digital_Scrapbook
+npm run deploy:pages
+```
+
+This runs `npm run build` and publishes `dist/` to the `gh-pages` branch.
+
+### Offline export build
+
+Use the export build only when you want the standalone offline scrapbook bundle locally.
+
+```bash
+cd Digital_Scrapbook
+npm run build:export
+```
+
+This export can become too large for GitHub Pages because it inlines all content into a single `dist/index.html` file.
+
 ## Sync Production Content To Local
 
 From the repository root, use the sync helper:
